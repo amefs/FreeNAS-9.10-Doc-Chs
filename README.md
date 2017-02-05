@@ -30,6 +30,8 @@ FreeNAS作为一个基于FreeBSD的NAS系统, 稳定性较好, 有着较为完�
 		* [高级](#高级)
 			* [自动协调](#自动协调)
 		* [电子邮件](#电子邮件)
+		* [系统数据集](#系统数据集)
+		* [微调](#微调)
 		
 ##简介
 ###硬件要求
@@ -599,3 +601,108 @@ FreeNAS®提供了一个自动协调脚本来尝试根据硬件优化系统设�
 |密码				|字符串				|必要时输入SMTP的授权密码
 
 点击`Send Test Mail`确认设置的电子邮件设定可以正常工作. 如果测试邮件发送是被, 双击目标邮件地址来修改.
+
+####系统数据集
+
+`System → System Dataset`如下图显示, 可以用来选择永久存放系统数据集的存储池. 系统数据集保存了debug核心文件, Samba4的metadata比如说 账户/用户组的缓存以及分享等级权限. 如果FreeNAS®系统设置为域名控制器, 所有的域名控制状态也都会被保存, 包含了域名控制器的账户和用户组.
+
+![SystemDataset](http://doc.freenas.org/9.10/_images/system5a.png "SystemDataset")
+
+系统数据集也可以设定为保存系统日志和报告信息. 如果有许多日志条目或者报告信息, 移动这些系统数据集可以防止设备空间中有限的`/var`空间被填满.
+
+使用下拉菜单选择包含系统数据卷的ZFS卷(存储池), 一旦系统数据集的路径被修改, 会有一个弹框警告表示需要重新启动SMB服务, 会导致活动状态的SMB连接中断.
+
+选中`Syslog`复选框则保存系统日志到系统数据集.
+
+选中`Reporting Database`复选框则保存报告信息到系统数据集.
+
+如果做出了配置修改, 需要点击保存.
+
+如果修改了系统数据集的位置, 那么FreeNAS®将会自动将现有的数据迁移到新的目录.
+
+*注意: 根据配置的不同, 系统数据集可能会占用大量的空寂在哪并且频繁写入, 因此请不要将系统数据集放在闪存设备或者有限空间或者写入寿命较少的设备上.*
+
+####微调
+
+`System → Tunables`可以管理以下的设置:
+
+1.FreeBSD sysctls: 使用[sysctl](https://www.freebsd.org/cgi/man.cgi?query=sysctl "sysctl")来改变FreeNAS®运行的FreeBSD内核, 以此调节系统.
+
+2.FreeBSD loaders: loader仅用于基于FreeBSD的系统启动, 可以在启动时将参数传递给内核以及其他内核模块, 例如FreeBSD的硬件驱动.
+
+3.FreeBSD rc.conf: [rc.conf](https://www.freebsd.org/cgi/man.cgi?query=rc.conf&apropos=0&sektion=0&manpath=FreeBSD+10.3-RELEASE "re.conf")用于将系统配置参数传递到启动脚本. 由于FreeNAS®针对存储进行了优化, 因袭并不是所有rc.conf都可以配置. 注意, 在FreeNAS®中可以自定义的选项都存储在`/tmp/rc.conf.freenas`.
+
+*警告: 添加sysctls,loaders或者re.conf都是高级功能, sysctl会立即生效, 而loader会在启动阶段影响FreeNAS®. 在你了解并且测试之前请不要创建任何微调参数.*
+
+sysctls,loaders或者re.conf的值都用于调节内核参数, 要加载的驱动程序或者服务. 这些描述以及建议值可以在[FreeBSD手册](http://www.freebsd.org/handbook "Handbook.")的特定驱动程序章节找到.
+
+![AddTunable](http://doc.freenas.org/9.10/_images/tunable.png "AddTunable")
+
+|设定				|值					|描述
+|:------------------|:------------------|:------------------
+|变量				|字符串				|一般来说是sysctl或者需要加载的驱动名称, 这些内容显示在手册上
+|值					|整型或者字符串		|变量关联的值; 一般来说使用*YES*来启用sysctl或者驱动
+|类型				|下拉菜单			|选择Loader, rc.conf, 或者Sysctl
+|注释				|字符串				|可选, 但是这是一个比较有用的提示, 可以说明添加这个参数的理由
+|启用				|下拉菜单			|如果想在不删除的前提下禁用这个设定, 那么取消勾选即可
+
+所有添加的的系统微调都会在`System → Tunables`列出. 改变已经存在的系统微调值可以按编辑按钮, 移除此项微调则按删除按钮.
+
+一些sysctl是只读的, 这就是说需要重启后才能启用这些设定, 当然你可以通过Shell更改来判断这些sysctl是否只读. 比如说将*sysctl net.inet.tcp.delay_ack*的值改为*1*, 使用*sysctl net.inet.tcp.delay_ack=1*命令, 如果sysctl指令是制度的, 那么会显示一个这项设置为只读的错误报告. 如果没有显示错误, 那么这项设定将被立即应用. 为了在重启后启用这些设定, 必须在`System → Tunables`添加这些内容.
+
+GUI不会显示FreeNAS®的默认预设sysctl, FreeNAS® 9.10.2-U1带有以下的sysctl设定:
+
+```
+kern.metadelay=3
+kern.dirdelay=4
+kern.filedelay=5
+kern.coredump=1
+kern.sugid_coredump=1
+net.inet.tcp.delayed_ack=0
+vfs.timestamp_precision=3
+```
+
+*警告: 不要添加或者编辑这些sysctl, 因为这些设定可能会导致系统无法使用.*
+
+GUI不会显示FreeNAS®安装时预设的loader, FreeNAS® 9.10.2-U1带有以下默认loaders:
+
+```
+autoboot_delay="2"
+loader_logo="freenas"
+loader_menu_title="Welcome to FreeNAS"
+loader_brand="freenas-brand"
+loader_version=" "
+kern.cam.boot_delay="30000"
+debug.debugger_on_panic=1
+debug.ddb.textdump.pending=1
+hw.hptrr.attach_generic=0
+vfs.mountroot.timeout="30"
+ispfw_load="YES"
+hint.isp.0.role=2
+hint.isp.1.role=2
+hint.isp.2.role=2
+hint.isp.3.role=2
+module_path="/boot/kernel;/boot/modules;/usr/local/modules"
+net.inet6.ip6.auto_linklocal="0"
+vfs.zfs.vol.mode=2
+kern.geom.label.disk_ident.enable="0"
+hint.ahciem.0.disabled="1"
+hint.ahciem.1.disabled="1"
+kern.msgbufsize="524288"
+hw.usb.no_shutdown_wait=1
+```
+
+*警告: 不要添加或者编辑这些loaders, 因为这些设定可能会导致系统无法使用.*
+
+9.10.2-U1使用的ZFS版本弃用了以下微调信息:
+
+```
+vfs.zfs.write_limit_override
+vfs.zfs.write_limit_inflated
+vfs.zfs.write_limit_max
+vfs.zfs.write_limit_min
+vfs.zfs.write_limit_shift
+vfs.zfs.no_write_throttle
+```
+
+从早期的FreeNAS®版本升级后, 这些微调会被自动删除, 请不要手动重新添加.
