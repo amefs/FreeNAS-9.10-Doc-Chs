@@ -1,10 +1,10 @@
-#FreeNAS 中文文档(9.10.2-U1)
+# FreeNAS 中文文档(9.10.2-U1)
 
 FreeNAS作为一个基于FreeBSD的NAS系统, 稳定性较好, 有着较为完善的RAID支持, 同时使用ZFS文件系统, 有着不错的IO性能, 其功能也能够通过自带的插件扩展.
 
 以下文档翻译自[FreeNAS®](http://doc.freenas.org "freenas.org")
 
-###目录
+### 目录
 * [简介](#简介)
 	* [硬件要求](#硬件要求)
 		* [RAM](#RAM)
@@ -33,14 +33,15 @@ FreeNAS作为一个基于FreeBSD的NAS系统, 稳定性较好, 有着较为完�
 		* [系统数据集](#系统数据集)
 		* [微调](#微调)
 		
-##简介
-###硬件要求
+## 简介
+
+### 硬件要求
 
 FreeNAS® 9.10.2-U1 基于 FreeBSD 10.3 开发, 支持[FreeBSD硬件兼容列表](http://www.freebsd.org/releases/10.3R/hardware.html "FreeBSD Hardware Compatibility List")中相同的硬件, [支持的处理器列表](https://www.freebsd.org/releases/10.3R/hardware.html#proc " 2.1 amd64").现在的FreeNAS系统只能运行于64位的处理器上.
 
 *注意: FreeNAS®从GPT分区引导。 这意味着系统BIOS必须能够使用旧版BIOS固件(BIOS legacy)接口或EFI进行引导。*
 
-####RAM
+#### RAM
 
 想要尽可能发挥出FreeNAS®系统的性能, 那么就应该尽可能多的安装RAM. 推荐的最小内存是8GB. 内存越多, FreeNAS®就能够发挥更好的性能.
 
@@ -58,7 +59,7 @@ FreeNAS® 9.10.2-U1 基于 FreeBSD 10.3 开发, 支持[FreeBSD硬件兼容列表
 
 当FreeNAS®的系统内存小于8GB时, 会降低性能, 同时有可能发生一些错误, 所以在使用FreeNAS®存储数据之前, 建议添加足够的内存.
 
-####操作系统介质
+#### 操作系统介质
 
 FreeNAS® 应当被安装在一个与存储磁盘不同的介质上. 这个介质可以是U盘, 可以是SSD, 可以是嵌入式的闪存, 也可以是DOM盘, 不建议将系统安装到存储硬盘中, 安装系统的磁盘将不可以被用作存放数据.
 
@@ -74,7 +75,7 @@ FreeNAS® 应当被安装在一个与存储磁盘不同的介质上. 这个介�
 
 + 为了更加可靠的引导, 可以使用两个设备, 在安装时选择他们, 那么安装时会创建镜像引导设备.
 
-####存储介质与控制器
+#### 存储介质与控制器
 
 FreeNAS®支持的存储控制器同FreeBSD, 可以在[列表](https://www.freebsd.org/releases/10.3R/hardware.html#disk "Disk Controllers Compatibility List")中搜索兼容的硬件设备.
 
@@ -92,7 +93,7 @@ ZFS虚拟磁盘设备vdevs, 是作为单个设备使用的磁盘组, 它可以�
 
 [ZFS设备大小与考校比较表格](https://forums.freenas.org/index.php?threads/zfs-drive-size-and-cost-comparison-spreadsheet.38092/ "ZFS Drive Size and Cost Comparison spreadsheet")可以用来比较不同数量的磁盘可用空间的大小.
 
-####网络接口
+#### 网络接口
 
 FreeBSD支持的以太网设备列表中列出了所有支持的NIC, 其中表现最好的是Intel Chelsio, 有需求的情况可以单独购买这些NIC, Realtek网卡通常情况下表现不佳, 因为它并不提供独立的处理器.
 
@@ -104,9 +105,9 @@ FreeBSD支持的以太网设备列表中列出了所有支持的NIC, 其中表�
 
 LAN远程唤醒(WOL)的支持由FreeBSD驱动决定. 
 
-###安装与升级
+### 安装与升级
 
-####获取FreeNAS
+#### 获取FreeNAS
 
 最新版本的FreeNAS®可以在[官方网站](http://download.freenas.org/ "FreeNAS.org")下载.
 
@@ -116,7 +117,7 @@ LAN远程唤醒(WOL)的支持由FreeBSD驱动决定.
 
 每一个文件都有它相关的`sha256.txt`文件, 它可以用来确定下载的文件是否完整.
 
-####准备安装介质
+#### 准备安装介质
 
 FreeNAS®的安装介质可以是CD或者U盘.
 
@@ -137,7 +138,7 @@ dd if=FreeNAS-9.10-RELEASE-x64.iso of=/dev/da0 bs=64k
 
 	使用[Image Writer](https://launchpad.net/win32-image-writer/ "Image Writer")或者[Rufus](http://rufus.akeo.ie/ "Rufus")写入安装镜像
 	
-####安装
+#### 安装
 
 1.将安装介质插入电脑, 并且从该介质启动,  FreeNAS® 安装 GRUB 菜单如图所示.
 
@@ -173,7 +174,7 @@ dd if=FreeNAS-9.10-RELEASE-x64.iso of=/dev/da0 bs=64k
 
 ![Success](http://doc.freenas.org/9.10/_images/cdrom4a.png "Success")
 
-####升级
+#### 升级
 目前来说FreeNAS®的升级主要是两种方案
 
 + 通过ISO升级
@@ -186,7 +187,7 @@ dd if=FreeNAS-9.10-RELEASE-x64.iso of=/dev/da0 bs=64k
 
 	在界面中选择`System → Update`即可完成升级
 	
-###启动
+### 启动
 
 控制台的初始化菜单如下, 在启动完成后就会显示, 当FreeNAS®拥有显示器键盘等外设的时候, 这个控制台就可以作为系统的Administer控制系统.
 
@@ -224,7 +225,7 @@ dd if=FreeNAS-9.10-RELEASE-x64.iso of=/dev/da0 bs=64k
 
 14)关机
 
-####获取一个IP
+#### 获取一个IP
 
 在启动完成之后, FreeNAS® 会自动尝试通过DHCP方式获取到一个动态的网络接口, 如果成功的到了地址, 那么这时候地址会被显示在终端控制台的界面上，
 
@@ -254,21 +255,21 @@ http://192.168.1.108
 ```
 在得到FreeNAS® 系统的IP以后, 在浏览器中输入此IP就可以进入FreeNAS® 的WebUI控制界面.
 
-####登录
+#### 登录
 使用安装过程中设定的root密码即可登录GUI界面
 
 ![Login](http://doc.freenas.org/9.10/_images/login1b.png "Login")
 
 ![Loginmain](http://doc.freenas.org/9.10/_images/initial1c.png "Loginmain")
 
-####登录
+#### 登录
 使用安装过程中设定的root密码即可登录GUI界面
 
 ![Login](http://doc.freenas.org/9.10/_images/login1b.png "Login")
 
 ![Loginmain](http://doc.freenas.org/9.10/_images/initial1c.png "Loginmain")
 
-###账户
+### 账户
 
 账户配置即通过GUI界面手动创建、管理账户和用户组, 此部分包含以下条目: 
 
@@ -276,7 +277,7 @@ http://192.168.1.108
 
 + 账户: 管理FreeNAS®系统中UNIX风格的账户
 
-####配置用户组
+#### 配置用户组
 
 用户组界面提供了FreeNAS®系统中UNIX风格的用户组的管理功能.
 
@@ -305,7 +306,7 @@ http://192.168.1.108
 
 当用户组和用户被创建后, 用户可以成为一个组的成员. 选中成员所分配的用户组, 点击`Members`选中`Member users`列表(这里会显示系统中所有用户账户)单击`>>`来移动用户到右侧. 显示在右侧的用户帐户会被添加成为当前用户组的成员
 
-####配置账户
+#### 配置账户
 
 FreeNAS®支持账户, 用户组, 权限, 同时可以自由配置没个账户可以访问的FreeNAS®中的数据. 为了分配分享权限, 必须完成下列步骤:
 
@@ -371,7 +372,7 @@ FreeNAS®支持账户, 用户组, 权限, 同时可以自由配置没个账户�
 |zsh				|Z shell
 |git-shell			|受限的 git shell
 
-###系统
+### 系统
 
 管理账户的WebUI界面中"系统"部分包含以下条目:
 
@@ -397,7 +398,7 @@ FreeNAS®支持账户, 用户组, 权限, 同时可以自由配置没个账户�
 
 + 支持: 可以用来报告Bug或者请求一个新的功能
 
-####信息
+#### 信息
 
 `System → Information`显示了FreeNAS®系统的常规信息.
 
@@ -454,7 +455,7 @@ NTP服务器: 网络授时协议(NTP)可以用作在网络上同步计算机的�
 |最大 Poll			|整型				|2秒内的功率; 不可以高于17或者低于`Min. Poll`
 |强制				|复选框				|强制使用附加的NTP服务器, 即使目前不可用
 
-####启动器
+#### 启动器
 
 FreeNAS®支持被称为多引导环境的ZFS功能. 多引导环境使得系统升级变得更加低风险. 在应用升级之前升级程序会自动创建一个当前引导环境的快照, 同时把它添加到引导菜单. 如果升级失败, 重启系统并且从引导菜单中选择先前的启动环境, 以指示系统回到之前的系统状态.
 
@@ -506,7 +507,7 @@ FreeNAS®支持被称为多引导环境的ZFS功能. 多引导环境使得系统
 
 第一个条目就是活动的引导环境, 或者是引导已经配置的系统. 如果要引导其他的引导环境, 那么按下`spacebar`暂停在引导菜单, 使用方向键选择`Boot Environment Menu`, 按下`Enter`, 则显示其他可用的引导环境. 使用上下按键选择引导环境, 按下`Enter`继续引导, 如果每次都需要使用该引导, 则应当进入`System → Boot`, 激活该启动项.
 
-#####镜像启动设备
+##### 镜像启动设备
 
 如果系统当前从一个设备引导, 你可以添加另外一个镜像启动设备. 通过这种方式, 当一个设备启动失败时, 系统仍然有一个备份的启动文件系统, 因此可以配置从剩余的镜像设备中启动.
 
@@ -518,7 +519,7 @@ FreeNAS®支持被称为多引导环境的ZFS功能. 多引导环境使得系统
 
 一旦镜像设备创建完成, 状态页面中会显示现在是一个*mirror*, 设备会显示在mirror中.
 
-####高级
+#### 高级
 
 `System → Advanced`菜单选项如下所示.
 
@@ -568,7 +569,7 @@ FreeNAS®支持被称为多引导环境的ZFS功能. 多引导环境使得系统
 |压缩备份			|复选框				|选中时, 使用gzip压缩备份数据来减少传输数据的尺寸
 |使用授权密匙		|复选框				|选中时, root账户的公钥必须被存储在远程系统的`~root/.ssh/authorized_keys`中, 同时这个密钥不应当受到密码保护
 
-#####自动协调
+##### 自动协调
 
 FreeNAS®提供了一个自动协调脚本来尝试根据硬件优化系统设置. 比如说, 如果系统中存在一个ZFS卷有着RAM限制, 这个自动协调脚本会自适应一些ZFS sysctl来减少ZFS对内存的需求问题. 它应当作为一个临时措施, 只到系统添加更多的内存. 由于自动协调限制了ARC, 因此它会降低系统速度.
 
@@ -580,7 +581,7 @@ FreeNAS®提供了一个自动协调脚本来尝试根据硬件优化系统设�
 
 如果你希望查看脚本执行了哪些检查, 可以在`/usr/local/bin/autotune`找到脚本.
 
-####电子邮件
+#### 电子邮件
 
 自动脚本每天都会向root账户发送包含磁盘健康等重要信息的邮件. 警告时间也会被发送到root账户. 但是, 管理账户通常不会在FreeNAS®系统中阅读邮件. 那么这些email通常会被额外发送到管理员方便阅读的电子邮箱地址. 通过配置这个可以是的管理员的远程邮箱更容易收到系统问题, 状态变化的报告.
 
@@ -602,7 +603,7 @@ FreeNAS®提供了一个自动协调脚本来尝试根据硬件优化系统设�
 
 点击`Send Test Mail`确认设置的电子邮件设定可以正常工作. 如果测试邮件发送是被, 双击目标邮件地址来修改.
 
-####系统数据集
+#### 系统数据集
 
 `System → System Dataset`如下图显示, 可以用来选择永久存放系统数据集的存储池. 系统数据集保存了debug核心文件, Samba4的metadata比如说 账户/用户组的缓存以及分享等级权限. 如果FreeNAS®系统设置为域名控制器, 所有的域名控制状态也都会被保存, 包含了域名控制器的账户和用户组.
 
@@ -622,7 +623,7 @@ FreeNAS®提供了一个自动协调脚本来尝试根据硬件优化系统设�
 
 *注意: 根据配置的不同, 系统数据集可能会占用大量的空寂在哪并且频繁写入, 因此请不要将系统数据集放在闪存设备或者有限空间或者写入寿命较少的设备上.*
 
-####微调
+#### 微调
 
 `System → Tunables`可以管理以下的设置:
 
